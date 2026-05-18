@@ -1,0 +1,13 @@
+node_modules
+.git
+pnpm-lock.yaml
+pnpm-workspace.yaml
+*.md
+.github
+.prettierignore
+prettier.config.js
+eslint.config.mjs
+.replit
+replit.nix
+app.json
+docker-compose.yml

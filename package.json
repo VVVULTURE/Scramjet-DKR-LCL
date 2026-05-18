@@ -1,0 +1,23 @@
+{
+  "name": "scramjet-proxy",
+  "version": "2.0.0",
+  "description": "Scramjet web proxy — local-style server (no Fastify), deployable on Render",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev":   "node src/index.js"
+  },
+  "dependencies": {
+    "@mercuryworkshop/bare-mux":          "^2.1.7",
+    "@mercuryworkshop/libcurl-transport": "^1.5.2",
+    "@mercuryworkshop/scramjet":          "^1.1.0",
+    "@mercuryworkshop/wisp-js":           "^0.4.1",
+    "ws":                                 "^8.18.3"
+  },
+  "keywords": ["proxy", "scramjet", "wisp"],
+  "author": "Mercury Workshop",
+  "license": "AGPL-3.0"
+}

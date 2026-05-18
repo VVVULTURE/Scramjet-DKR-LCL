@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+		<title>Scramjet</title>
+
+		<link rel="shortcut icon" href="favicon.ico" />
+
+		<script src="/scram/scramjet.all.js"></script>
+		<script src="/baremux/index.js"></script>
+
+		<link rel="stylesheet" href="index.css" />
+		<script src="register-sw.js" defer></script>
+		<script src="search.js" defer></script>
+		<script src="index.js" defer></script>
+	</head>
+
+	<body>
+		<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
+			<img class="logo" src="sj.png" alt="Scramjet" />
+			<h1>Scramjet | MW</h1>
+		</div>
+		<div class="flex-center desc left-margin">
+			<p>
+				Scramjet is an experimental interception-based web proxy designed to
+				evade internet censorship, bypass arbitrary web browser restrictions and
+				innovate web proxy technologies.
+			</p>
+		</div>
+
+		<form id="sj-form" class="flex-center">
+			<input
+				id="sj-search-engine"
+				value="https://www.google.com/search?q=%s"
+				type="hidden"
+			/>
+			<input id="sj-address" type="text" placeholder="Search the web freely" />
+		</form>
+		<div class="desc left-margin">
+			<p id="sj-error"></p>
+			<pre id="sj-error-code"></pre>
+		</div>
+
+		<footer>
+			<div>
+				<a title="The Mercury Workshop GitHub organization" href="https://github.com/MercuryWorkshop">Mercury Workshop</a>
+				<a title="The example demo app for Scramjet" href="https://github.com/MercuryWorkshop/Scramjet-Demo">GitHub</a>
+				<a title="License information" href="credits.html">Credits</a>
+				<a title="Open proxy in a stealth tab" href="#" id="blob-tab-btn">Blob Tab</a>
+			</div>
+			<div>
+				<span>Scramjet &copy; MW 2025</span>
+			</div>
+		</footer>
+
+		<script>
+		(function () {
+			document.getElementById('blob-tab-btn').addEventListener('click', function (e) {
+				e.preventDefault();
+
+				/*
+				 * WHY about:blank AND NOT a blob: URL
+				 * ─────────────────────────────────────────────────────────────
+				 * blob: URLs have their own opaque origin (e.g. blob:https://
+				 * yourserver.com/uuid). When an iframe inside a blob: tab tries
+				 * to register a service worker, browsers enforce:
+				 *
+				 *   "Scope URL is not same-origin with Client"
+				 *
+				 * …because the top-level context (blob: origin) is not the same
+				 * origin as the SW scope (render-server origin). Even though the
+				 * iframe itself IS on the render-server origin, browsers use the
+				 * top-level frame's origin for this check.
+				 *
+				 * about:blank, by contrast, INHERITS the opener's origin per the
+				 * HTML spec. So when we window.open('about:blank') from the render
+				 * server page and document.write an iframe into it, the top-level
+				 * context IS the render-server origin → SW registration succeeds,
+				 * COOP/COEP are satisfied, SharedArrayBuffer works.
+				 *
+				 * The address bar shows "about:blank", which hides the proxy URL
+				 * from network-level URL filters just as effectively as blob:.
+				 */
+				var win = window.open('about:blank', '_blank');
+				if (!win) {
+					alert('Popup blocked — please allow popups for this page and try again.');
+					return;
+				}
+
+				var origin = location.origin;
+
+				var html =
+					'<!DOCTYPE html>\n' +
+					'<html lang="en">\n' +
+					'<head>\n' +
+					'  <meta charset="utf-8">\n' +
+					'  <meta name="viewport" content="width=device-width,initial-scale=1">\n' +
+					'  <title>\u200b</title>\n' +
+					'  <style>\n' +
+					'    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}\n' +
+					'    html,body{width:100%;height:100%;overflow:hidden;background:#111}\n' +
+					'    iframe{position:fixed;inset:0;width:100%;height:100%;border:none}\n' +
+					'  </style>\n' +
+					'</head>\n' +
+					'<body>\n' +
+					'  <iframe src="' + origin + '/"></iframe>\n' +
+					'</body>\n' +
+					'</html>';
+
+				/*
+				 * document.write into about:blank is allowed because about:blank
+				 * inherits the opener's origin — we are writing into our own origin.
+				 */
+				win.document.open();
+				win.document.write(html);
+				win.document.close();
+			});
+		})();
+		</script>
+	</body>
+</html>
